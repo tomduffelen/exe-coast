@@ -562,12 +562,10 @@ ${isExmouth ? `Exmouth context: Two very different environments — the sheltere
 Write 2-3 sentences only. Be direct and practical. Weave in any safety warnings naturally. No bullet points. No greeting. No location name at the start.`;
 
   try {
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
+    const response = await fetch('https://exe-coast-api.tomduffelen.workers.dev', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
         messages: [{ role: 'user', content: prompt }]
       })
     });
