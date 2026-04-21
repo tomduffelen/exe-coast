@@ -761,7 +761,7 @@ async function fetchAISummary(windKph, gustKph, windDir, waveH, wavePer, rain, d
   const veryLow = isVeryLowTide(tideData);
   const spring = isSpringTide(tideData);
   const isExmouth = currentLoc==='exmouth';
-  const ratings = SPORTS.map(s=>{const r=getRating(windKph,gustKph,waveH,s.key,currentLoc,tideData);return `${s.label}: ${r.label}`;}).join(', ');
+  const ratings = SPORTS.map(s=>{const r=getRating(windKph,gustKph,waveH,wavePer,s.key,currentLoc,tideData,dayIdx);return `${s.label}: ${r.label}`;}).join(', ');
 
   const prompt = `You are a friendly, knowledgeable local water sports advisor for ${LOCS[currentLoc].name}, Devon. Write a short conditions briefing for ${dayLabel}.
 
