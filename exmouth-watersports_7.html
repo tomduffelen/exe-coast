@@ -1,0 +1,786 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Exe Coast Water Sports</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+:root {
+  --ocean-deep: #061e2f;
+  --ocean: #0b3d5e;
+  --ocean-mid: #1565a0;
+  --ocean-light: #3a9fd6;
+  --ocean-pale: #d0eaf8;
+  --teal: #0d7a6e;
+  --teal-light: #e0f5f2;
+  --sand: #f7f2ea;
+  --text: #0f2336;
+  --text-mid: #3a5470;
+  --text-muted: #6b8499;
+  --ideal-bg: #e0f5f2; --ideal-text: #0a5c52; --ideal-border: #7ecfc7;
+  --good-bg: #e6f4e8; --good-text: #1a5e2e; --good-border: #7ec98d;
+  --warn-bg: #fdf3dc; --warn-text: #7a4a00; --warn-border: #f0c060;
+  --danger-bg: #fdeaea; --danger-text: #8b1c1c; --danger-border: #f09090;
+  --white: #ffffff;
+  --bg: #f2f6fa;
+  --card-border: #dde8f0;
+  --shadow: 0 2px 12px rgba(6,30,47,0.07);
+  --shadow-lg: 0 8px 32px rgba(6,30,47,0.12);
+}
+body { font-family: 'Outfit', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; -webkit-font-smoothing: antialiased; }
+
+/* ── LOCATION PICKER ── */
+#location-screen {
+  min-height: 100vh;
+  background: var(--ocean-deep);
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  padding: 2rem;
+  position: relative; overflow: hidden;
+}
+#location-screen::before {
+  content: '';
+  position: absolute; inset: 0;
+  background: radial-gradient(ellipse at 30% 60%, rgba(21,101,160,0.4) 0%, transparent 60%),
+              radial-gradient(ellipse at 80% 20%, rgba(13,122,110,0.25) 0%, transparent 50%);
+}
+.loc-inner { position: relative; z-index: 1; text-align: center; width: 100%; max-width: 520px; }
+.loc-wave { font-size: 48px; margin-bottom: 16px; display: block; }
+.loc-title { font-size: 30px; font-weight: 700; color: white; letter-spacing: -0.02em; margin-bottom: 8px; }
+.loc-sub { font-size: 15px; color: rgba(255,255,255,0.5); margin-bottom: 2.5rem; }
+.loc-cards { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.loc-card {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 18px; padding: 1.5rem 1.25rem;
+  cursor: pointer; transition: all 0.2s ease; text-align: left;
+  backdrop-filter: blur(8px);
+}
+.loc-card:hover {
+  background: rgba(255,255,255,0.13);
+  border-color: rgba(255,255,255,0.25);
+  transform: translateY(-3px);
+  box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+}
+.loc-card-icon { font-size: 28px; margin-bottom: 10px; display: block; }
+.loc-card-name { font-size: 18px; font-weight: 700; color: white; margin-bottom: 6px; }
+.loc-card-desc { font-size: 12px; color: rgba(255,255,255,0.5); line-height: 1.55; }
+.loc-tag-row { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+.loc-tag { font-size: 10px; font-weight: 500; padding: 3px 8px; border-radius: 20px; background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.6); }
+
+/* ── HEADER ── */
+#app-screen { display: none; }
+header {
+  background: var(--ocean-deep);
+  padding: 0;
+  position: relative;
+}
+.header-bg {
+  background: linear-gradient(135deg, var(--ocean-deep) 0%, var(--ocean) 100%);
+  padding: 1.25rem 1.25rem 2.5rem;
+  position: relative; overflow: hidden;
+}
+.header-bg::after {
+  content: '';
+  position: absolute; bottom: -1px; left: 0; right: 0; height: 40px;
+  background: var(--bg);
+  clip-path: ellipse(55% 100% at 50% 100%);
+}
+.header-inner { max-width: 680px; margin: 0 auto; display: flex; align-items: flex-start; justify-content: space-between; position: relative; z-index: 1; }
+.header-loc { font-size: 11px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ocean-light); margin-bottom: 5px; }
+.header-title { font-size: 24px; font-weight: 700; color: white; letter-spacing: -0.02em; }
+.header-updated { font-size: 11px; color: rgba(255,255,255,0.35); margin-top: 5px; }
+.btn-change-loc {
+  font-size: 12px; font-weight: 500; color: rgba(255,255,255,0.5);
+  background: rgba(255,255,255,0.08); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px; padding: 5px 14px; cursor: pointer; font-family: inherit;
+  transition: all 0.15s; white-space: nowrap; margin-top: 2px;
+}
+.btn-change-loc:hover { background: rgba(255,255,255,0.15); color: white; }
+
+/* ── MAIN ── */
+.main { max-width: 680px; margin: 0 auto; padding: 0 1rem 3rem; }
+
+/* ── TIDE HERO ── */
+.tide-hero {
+  background: var(--ocean);
+  border-radius: 18px;
+  padding: 1.25rem;
+  margin-bottom: 1rem;
+  position: relative; overflow: hidden;
+  box-shadow: var(--shadow-lg);
+}
+.tide-hero::before {
+  content: '';
+  position: absolute; top: -30px; right: -30px;
+  width: 140px; height: 140px; border-radius: 50%;
+  background: rgba(255,255,255,0.04);
+}
+.tide-hero-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ocean-light); margin-bottom: 12px; }
+.tide-hero-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.tide-next {
+  background: rgba(255,255,255,0.08);
+  border: 1px solid rgba(255,255,255,0.1);
+  border-radius: 12px; padding: 1rem;
+}
+.tide-next-label { font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 6px; font-weight: 500; }
+.tide-next-time { font-size: 32px; font-weight: 700; color: white; font-family: 'DM Mono', monospace; line-height: 1; letter-spacing: -0.02em; }
+.tide-next-height { font-size: 14px; color: rgba(255,255,255,0.6); margin-top: 5px; font-family: 'DM Mono', monospace; }
+.tide-next-in { font-size: 11px; color: var(--ocean-light); margin-top: 4px; font-weight: 500; }
+
+/* ── DAY TABS ── */
+.day-tabs { display: flex; gap: 6px; margin-bottom: 1rem; flex-wrap: wrap; }
+.day-tab {
+  padding: 8px 18px; border-radius: 22px;
+  border: 1.5px solid var(--card-border);
+  background: var(--white); color: var(--text-muted);
+  font-size: 13px; font-weight: 500; cursor: pointer;
+  font-family: inherit; transition: all 0.15s;
+}
+.day-tab:hover { border-color: var(--ocean-light); color: var(--ocean-mid); }
+.day-tab.active { background: var(--ocean); border-color: var(--ocean); color: white; box-shadow: 0 2px 8px rgba(11,61,94,0.25); }
+
+/* ── SPORT CARDS ── */
+.sport-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 10px; margin-bottom: 1rem; }
+@media(min-width:500px) { .sport-grid { grid-template-columns: repeat(4,1fr); } }
+.sport-card {
+  background: var(--white); border: 1px solid var(--card-border);
+  border-radius: 16px; padding: 1.1rem 0.75rem;
+  text-align: center; transition: all 0.15s;
+  box-shadow: var(--shadow);
+}
+.sport-card:hover { transform: translateY(-2px); box-shadow: var(--shadow-lg); }
+.sport-icon { font-size: 26px; margin-bottom: 7px; display: block; }
+.sport-name { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.07em; margin-bottom: 9px; }
+.rating-pill { display: inline-block; font-size: 11px; font-weight: 600; padding: 4px 11px; border-radius: 20px; }
+.rating-ideal { background: var(--ideal-bg); color: var(--ideal-text); }
+.rating-good { background: var(--good-bg); color: var(--good-text); }
+.rating-warn { background: var(--warn-bg); color: var(--warn-text); }
+.rating-danger { background: var(--danger-bg); color: var(--danger-text); }
+
+/* ── FLAGS ── */
+.flags-container { display: flex; flex-direction: column; gap: 8px; margin-bottom: 1rem; }
+.flag {
+  border-radius: 12px; padding: 11px 14px;
+  font-size: 13px; line-height: 1.55;
+  display: flex; gap: 10px; align-items: flex-start;
+  border-left: 3px solid transparent;
+}
+.flag-danger { background: var(--danger-bg); color: var(--danger-text); border-left-color: var(--danger-border); }
+.flag-warn { background: var(--warn-bg); color: var(--warn-text); border-left-color: var(--warn-border); }
+.flag-info { background: var(--ideal-bg); color: var(--ideal-text); border-left-color: var(--ideal-border); }
+.flag-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+
+/* ── SUMMARY ── */
+.summary-box {
+  background: var(--white);
+  border: 1px solid var(--card-border);
+  border-radius: 16px; padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem;
+  box-shadow: var(--shadow);
+  position: relative; overflow: hidden;
+}
+.summary-box::before {
+  content: '';
+  position: absolute; left: 0; top: 0; bottom: 0; width: 4px;
+  background: linear-gradient(to bottom, var(--ocean-light), var(--teal));
+  border-radius: 4px 0 0 4px;
+}
+.summary-header { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+.summary-label { font-size: 10px; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--ocean-mid); }
+.summary-badge { font-size: 10px; font-weight: 600; padding: 3px 9px; border-radius: 20px; background: var(--ideal-bg); color: var(--ideal-text); letter-spacing: 0.04em; }
+.summary-text { font-size: 14px; color: var(--text); line-height: 1.75; }
+.summary-text.loading { color: var(--text-muted); font-style: italic; }
+.refresh-btn { margin-top: 10px; font-size: 12px; font-weight: 500; color: var(--ocean-mid); background: none; border: 1px solid var(--card-border); border-radius: 20px; padding: 5px 14px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+.refresh-btn:hover { background: var(--bg); }
+@keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+.summary-text.loading { animation: pulse 1.5s infinite; }
+
+/* ── METRICS ── */
+.metrics-grid { display: grid; grid-template-columns: repeat(3,1fr); gap: 8px; margin-bottom: 1rem; }
+@media(min-width:500px) { .metrics-grid { grid-template-columns: repeat(6,1fr); } }
+.metric-card {
+  background: var(--white); border: 1px solid var(--card-border);
+  border-radius: 12px; padding: 0.85rem 0.75rem;
+  text-align: center; box-shadow: var(--shadow);
+}
+.metric-label { font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-muted); font-weight: 600; margin-bottom: 5px; }
+.metric-value { font-family: 'DM Mono', monospace; font-size: 20px; font-weight: 500; color: var(--ocean); line-height: 1; }
+.metric-unit { font-size: 10px; color: var(--text-muted); margin-top: 3px; }
+
+/* ── TIDE TABLE ── */
+.card-section {
+  background: var(--white); border: 1px solid var(--card-border);
+  border-radius: 16px; padding: 1.1rem 1.25rem;
+  margin-bottom: 1rem; box-shadow: var(--shadow);
+}
+.section-header { font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.12em; color: var(--text-muted); margin-bottom: 12px; }
+.tide-tabs { display: flex; gap: 5px; margin-bottom: 12px; }
+.tide-tab { font-size: 12px; font-weight: 500; padding: 5px 14px; border-radius: 20px; border: 1px solid var(--card-border); background: var(--bg); color: var(--text-muted); cursor: pointer; font-family: inherit; transition: all 0.12s; }
+.tide-tab.active { background: var(--ocean); color: white; border-color: var(--ocean); }
+.tide-row { display: flex; justify-content: space-between; align-items: center; padding: 8px 0; border-bottom: 1px solid var(--bg); }
+.tide-row:last-child { border-bottom: none; }
+.tide-type-wrap { display: flex; align-items: center; gap: 8px; }
+.tide-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+.tide-dot-high { background: var(--ocean-light); }
+.tide-dot-low { background: var(--text-muted); }
+.tide-type { font-size: 14px; font-weight: 500; color: var(--text); }
+.tide-time { color: var(--text-muted); font-family: 'DM Mono', monospace; font-size: 13px; }
+.tide-height { font-family: 'DM Mono', monospace; font-size: 13px; color: var(--ocean); font-weight: 500; }
+
+/* ── FORECAST ── */
+.forecast-days { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 4px; }
+.forecast-day {
+  text-align: center; padding: 10px 6px; border-radius: 12px;
+  border: 1px solid var(--card-border); cursor: pointer;
+  transition: all 0.12s; background: var(--bg);
+}
+.forecast-day:hover { border-color: var(--ocean-light); }
+.forecast-day.active-day { background: var(--ocean-pale); border-color: var(--ocean-light); }
+.fc-name { font-size: 11px; color: var(--text-muted); font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; }
+.fc-wind { font-size: 14px; font-weight: 600; color: var(--ocean); margin: 5px 0 3px; font-family: 'DM Mono', monospace; }
+.fc-wave { font-size: 11px; color: var(--text-muted); }
+
+.error-box { background: var(--danger-bg); border: 1px solid var(--danger-border); border-radius: 12px; padding: 1rem; color: var(--danger-text); font-size: 14px; margin-bottom: 1rem; display: none; }
+
+footer { text-align: center; padding: 1.5rem 1rem; font-size: 11px; color: var(--text-muted); border-top: 1px solid var(--card-border); line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<!-- LOCATION PICKER -->
+<div id="location-screen">
+  <div class="loc-inner">
+    <span class="loc-wave">🌊</span>
+    <div class="loc-title">Exe Coast Water Sports</div>
+    <div class="loc-sub">Live conditions for Exmouth &amp; Budleigh Salterton</div>
+    <div class="loc-cards">
+      <div class="loc-card" onclick="selectLocation('exmouth')">
+        <span class="loc-card-icon">⚓</span>
+        <div class="loc-card-name">Exmouth</div>
+        <div class="loc-card-desc">Sandy beach, open sea &amp; sheltered Exe Estuary. Two very different environments in one location.</div>
+        <div class="loc-tag-row">
+          <span class="loc-tag">Open sea</span>
+          <span class="loc-tag">Exe Estuary</span>
+          <span class="loc-tag">All sports</span>
+        </div>
+      </div>
+      <div class="loc-card" onclick="selectLocation('budleigh')">
+        <span class="loc-card-icon">🪨</span>
+        <div class="loc-card-name">Budleigh Salterton</div>
+        <div class="loc-card-desc">Open pebble beach. Stunning when calm — exposed and dangerous in swell.</div>
+        <div class="loc-tag-row">
+          <span class="loc-tag">Pebble beach</span>
+          <span class="loc-tag">Open water</span>
+          <span class="loc-tag">Experienced</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MAIN APP -->
+<div id="app-screen">
+  <header>
+    <div class="header-bg">
+      <div class="header-inner">
+        <div>
+          <div class="header-loc" id="header-loc-name">Exmouth</div>
+          <div class="header-title">Water sports conditions</div>
+          <div class="header-updated" id="last-updated">Fetching live data...</div>
+        </div>
+        <button class="btn-change-loc" onclick="changeLoc()">Change location</button>
+      </div>
+    </div>
+  </header>
+
+  <div class="main">
+    <div class="error-box" id="error-box">Could not load live data. Please check your connection and refresh.</div>
+
+    <!-- TIDE HERO -->
+    <div class="tide-hero">
+      <div class="tide-hero-label">Next tides</div>
+      <div class="tide-hero-grid">
+        <div class="tide-next" id="next-tide-1">
+          <div class="tide-next-label">—</div>
+          <div class="tide-next-time">--:--</div>
+          <div class="tide-next-height">—</div>
+          <div class="tide-next-in"></div>
+        </div>
+        <div class="tide-next" id="next-tide-2">
+          <div class="tide-next-label">—</div>
+          <div class="tide-next-time">--:--</div>
+          <div class="tide-next-height">—</div>
+          <div class="tide-next-in"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- AI SUMMARY -->
+    <div class="summary-box" id="summary-box">
+      <div class="summary-header">
+        <div class="summary-label">Today's conditions</div>
+        <div class="summary-badge">Claude AI</div>
+      </div>
+      <div class="summary-text loading" id="summary-text">Generating summary...</div>
+    </div>
+
+    <!-- FLAGS -->
+    <div class="flags-container" id="flags-container"></div>
+
+    <!-- DAY TABS -->
+    <div class="day-tabs" id="day-tabs">
+      <button class="day-tab active" onclick="setDay(0)" id="tab-0">Today</button>
+      <button class="day-tab" onclick="setDay(1)" id="tab-1">Tomorrow</button>
+      <button class="day-tab" onclick="setDay(2)" id="tab-2">—</button>
+      <button class="day-tab" onclick="setDay(3)" id="tab-3">—</button>
+    </div>
+
+    <!-- SPORT CARDS -->
+    <div class="sport-grid" id="sport-cards">
+      <div class="sport-card"><span class="sport-icon">🛶</span><div class="sport-name">Kayak</div><div class="rating-pill rating-warn">Loading</div></div>
+      <div class="sport-card"><span class="sport-icon">🪁</span><div class="sport-name">Kite surf</div><div class="rating-pill rating-warn">Loading</div></div>
+      <div class="sport-card"><span class="sport-icon">🚣</span><div class="sport-name">SUP</div><div class="rating-pill rating-warn">Loading</div></div>
+      <div class="sport-card"><span class="sport-icon">⛵</span><div class="sport-name">Sailing</div><div class="rating-pill rating-warn">Loading</div></div>
+    </div>
+
+
+
+
+
+    <!-- METRICS -->
+    <div class="metrics-grid">
+      <div class="metric-card"><div class="metric-label">Wind</div><div class="metric-value" id="m-wind">—</div><div class="metric-unit">knots</div></div>
+      <div class="metric-card"><div class="metric-label">Direction</div><div class="metric-value" id="m-dir">—</div><div class="metric-unit">&nbsp;</div></div>
+      <div class="metric-card"><div class="metric-label">Waves</div><div class="metric-value" id="m-wave">—</div><div class="metric-unit">metres</div></div>
+      <div class="metric-card"><div class="metric-label">Period</div><div class="metric-value" id="m-period">—</div><div class="metric-unit">seconds</div></div>
+      <div class="metric-card"><div class="metric-label">Rain</div><div class="metric-value" id="m-rain">—</div><div class="metric-unit">% chance</div></div>
+      <div class="metric-card"><div class="metric-label">Temp</div><div class="metric-value" id="m-temp">—</div><div class="metric-unit">°C</div></div>
+    </div>
+
+    <!-- TIDE TABLE -->
+    <div class="card-section">
+      <div class="section-header" id="tide-section-header">Tide times — Today</div>
+      <div id="tide-rows"><div class="tide-row"><span style="color:#888;font-size:13px;">Loading tide data...</span></div></div>
+    </div>
+
+    <!-- FORECAST -->
+    <div class="card-section">
+      <div class="section-header">4-day outlook — tap to view conditions</div>
+      <div class="forecast-days" id="forecast-days"></div>
+    </div>
+  </div>
+
+  <footer>
+    Weather &amp; marine data: Open-Meteo &nbsp;·&nbsp; Tide times: WorldTides<br>
+    Exe Coast Water Sports · Exmouth &amp; Budleigh Salterton, Devon
+  </footer>
+</div>
+
+<script>
+const WORLDTIDES_KEY = '4a299365-ad1c-4f3f-b519-000c72f1b648';
+const LOCATIONS = {
+  exmouth: { name: 'Exmouth', lat: 50.6147, lon: -3.4130, hasEstuary: true },
+  budleigh: { name: 'Budleigh Salterton', lat: 50.6290, lon: -3.3215, hasEstuary: false }
+};
+const SHORT_DAYS = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
+
+let currentLoc = null;
+let weatherData = null;
+let marineData = null;
+let tideData = null;
+let currentDay = 0;
+
+function degToCompass(d) {
+  return ['N','NE','E','SE','S','SW','W','NW'][Math.round(d/45)%8];
+}
+function isOffshore(deg) { return deg >= 22 && deg <= 157; }
+function timeUntil(dtSec) {
+  const diff = dtSec - Math.floor(Date.now()/1000);
+  if (diff <= 0) return null;
+  const h = Math.floor(diff/3600), m = Math.floor((diff%3600)/60);
+  return h > 0 ? `in ${h}h ${m}m` : `in ${m}m`;
+}
+
+function getRating(windKph, waveM, sport, loc) {
+  const kn = windKph * 0.539957;
+  const isBudleigh = loc === 'budleigh';
+  if (sport === 'kayak') {
+    if (kn > 25 || waveM > (isBudleigh ? 0.4 : 0.8)) return { label:'Not advised', cls:'rating-danger' };
+    if (kn > 18 || waveM > (isBudleigh ? 0.2 : 0.5)) return { label:'Experienced only', cls:'rating-warn' };
+    if (kn > 10) return { label:'Good', cls:'rating-good' };
+    return { label:'Ideal', cls:'rating-ideal' };
+  }
+  if (sport === 'kitesurf') {
+    if (kn < 10 || kn > 35) return { label:'Not advised', cls:'rating-danger' };
+    if (kn > 30) return { label:'Experienced only', cls:'rating-warn' };
+    if (kn >= 15 && kn <= 25) return { label:'Ideal', cls:'rating-ideal' };
+    return { label:'Good', cls:'rating-good' };
+  }
+  if (sport === 'sup') {
+    const wMax = isBudleigh ? 14 : 20, wvMax = isBudleigh ? 0.3 : 0.8;
+    if (kn > wMax || waveM > wvMax) return { label:'Not advised', cls:'rating-danger' };
+    if (kn > (isBudleigh ? 8 : 12) || waveM > (isBudleigh ? 0.2 : 0.5)) return { label:'Experienced only', cls:'rating-warn' };
+    if (kn > 5) return { label:'Good', cls:'rating-good' };
+    return { label:'Ideal', cls:'rating-ideal' };
+  }
+  if (sport === 'sail') {
+    if (kn < 4 || kn > 30 || waveM > 1.8) return { label:'Not advised', cls:'rating-danger' };
+    if (kn > 22 || waveM > 1.2) return { label:'Experienced only', cls:'rating-warn' };
+    if (kn >= 8 && kn <= 20) return { label:'Ideal', cls:'rating-ideal' };
+    return { label:'Good', cls:'rating-good' };
+  }
+}
+
+const SPORTS = [
+  { key:'kayak', icon:'🛶', label:'Kayak' },
+  { key:'kitesurf', icon:'🪁', label:'Kite surf' },
+  { key:'sup', icon:'🚣', label:'SUP' },
+  { key:'sail', icon:'⛵', label:'Sailing' },
+];
+
+function getFlags(windKph, windDir, waveM, loc) {
+  const kn = windKph * 0.539957;
+  const flags = [];
+  if (isOffshore(windDir) && kn > 8)
+    flags.push({ type:'danger', icon:'⚠️', text:'Offshore wind — wind is pushing away from shore. Getting back will be significantly harder than heading out. Extra caution for kayakers and SUP paddlers.' });
+  if (loc === 'exmouth' && kn > 10)
+    flags.push({ type:'warn', icon:'🌀', text:'Strong currents can build at the Exe Estuary mouth. The open sea past the shore development and around Orcombe Point can be very different to the sheltered estuary — do not underestimate this transition.' });
+  if (loc === 'budleigh' && waveM > 0.3)
+    flags.push({ type:'danger', icon:'🪨', text:'Budleigh\'s pebble beach creates dangerous wave rebound in swell. Waves can push kayaks and SUPs hard back into the beach. Avoid launching unless highly experienced in these conditions.' });
+  if (loc === 'budleigh' && kn >= 12)
+    flags.push({ type:'warn', icon:'🪁', text:'Kite surfing is possible but uncommon at Budleigh — the beach is narrow, pebbled and exposed. Exmouth\'s open beach offers far more space and is a much better choice.' });
+  if (loc === 'exmouth' && (kn > 14 || waveM > 0.5))
+    flags.push({ type:'info', icon:'⚓', text:'Conditions are moderate on open water. The sheltered Exe Estuary — past the dock area — will be considerably calmer and is worth considering as a safer option today.' });
+  return flags;
+}
+
+function renderDay(dayIndex) {
+  if (!weatherData || !marineData) return;
+  const wH = weatherData.hourly, mH = marineData.hourly;
+  if (!wH || !mH || !wH.wind_speed_10m) return;
+  const offset = Math.min(dayIndex * 24 + 9, (wH.wind_speed_10m.length || 120) - 1);
+  const windKph = wH.wind_speed_10m[offset] || 0;
+  const windDir = wH.wind_direction_10m[offset] || 0;
+  const waveH = (mH.wave_height && mH.wave_height[offset]) ? mH.wave_height[offset] : 0;
+  const wavePeriod = (mH.wave_period && mH.wave_period[offset]) ? mH.wave_period[offset] : null;
+  const rain = wH.precipitation_probability[offset];
+  const temp = wH.temperature_2m[offset];
+  const windKn = Math.round(windKph * 0.539957);
+
+  document.getElementById('m-wind').textContent = windKn;
+  document.getElementById('m-dir').textContent = degToCompass(windDir);
+  document.getElementById('m-wave').textContent = waveH.toFixed(1);
+  document.getElementById('m-period').textContent = wavePeriod ? Math.round(wavePeriod) : '—';
+  document.getElementById('m-rain').textContent = Math.round(rain);
+  document.getElementById('m-temp').textContent = Math.round(temp);
+
+  document.getElementById('sport-cards').innerHTML = SPORTS.map(s => {
+    const r = getRating(windKph, waveH, s.key, currentLoc);
+    return `<div class="sport-card"><span class="sport-icon">${s.icon}</span><div class="sport-name">${s.label}</div><div class="rating-pill ${r.cls}">${r.label}</div></div>`;
+  }).join('');
+
+
+
+  // Trigger AI summary fetch (debounced so rapid day switching doesn't spam the API)
+  clearTimeout(window._aiSummaryTimer);
+  window._aiSummaryTimer = setTimeout(() => fetchAISummary(), 300);
+}
+
+async function fetchAISummary() {
+  if (!weatherData || !marineData) return;
+
+  const summaryEl = document.getElementById('summary-text');
+  const labelEl = document.querySelector('.summary-label');
+
+  // Update label to reflect selected day
+  const now = new Date();
+  const dayDate = new Date(now); dayDate.setDate(now.getDate() + currentDay);
+  const dayLabel = currentDay === 0 ? "Today's conditions" : currentDay === 1 ? "Tomorrow's conditions" : dayDate.toLocaleDateString('en-GB',{weekday:'long'}) + "'s conditions";
+  if (labelEl) labelEl.textContent = dayLabel;
+
+  // Check daily cache — key includes location + day date + day offset
+  const cacheKey = 'ai_summary_' + currentLoc + '_' + dayDate.toISOString().split('T')[0] + '_d' + currentDay;
+  try {
+    const cached = JSON.parse(localStorage.getItem(cacheKey));
+    // Cache valid until midnight
+    const midnight = new Date(dayDate); midnight.setHours(23,59,59,999);
+    if (cached && cached.text && Date.now() < midnight.getTime()) {
+      summaryEl.className = 'summary-text';
+      summaryEl.textContent = cached.text;
+      renderFlags(cached.flags || []);
+      return;
+    }
+  } catch(e) {}
+
+  summaryEl.className = 'summary-text loading';
+  summaryEl.textContent = 'Generating conditions summary...';
+
+  const offset = currentDay * 24 + 9;
+  const wH = weatherData.hourly, mH = marineData.hourly;
+  const windKph = wH.wind_speed_10m[offset] || 0;
+  const windDir = wH.wind_direction_10m[offset] || 0;
+  const windKn = Math.round(windKph * 0.539957);
+  const waveH = (mH.wave_height && mH.wave_height[offset]) ? mH.wave_height[offset] : 0;
+  const wavePeriod = (mH.wave_period && mH.wave_period[offset]) ? Math.round(mH.wave_period[offset]) : null;
+  const rain = Math.round(wH.precipitation_probability[offset] || 0);
+  const temp = Math.round(wH.temperature_2m[offset] || 0);
+  const compass = degToCompass(windDir);
+  const offshore = isOffshore(windDir) && windKn > 8;
+  const isExmouth = currentLoc === 'exmouth';
+
+  // Compute sport ratings for context
+  const ratings = ['kayak','kitesurf','sup','sail'].map(s => {
+    const r = getRating(windKph, waveH, s, currentLoc);
+    return s + ': ' + r.label;
+  }).join(', ');
+
+  // Tide context
+  let tideContext = '';
+  if (tideData) {
+    const nowSec = Math.floor(Date.now()/1000);
+    const next = tideData.filter(t => t.dt >= nowSec)[0];
+    if (next) {
+      const tideTime = new Date(next.dt*1000).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+      tideContext = `Next tide: ${next.type === 'High' ? 'high' : 'low'} at ${tideTime}${next.height ? ' ('+next.height.toFixed(1)+'m)' : ''}.`;
+    }
+  }
+
+  const prompt = `You are a friendly local water sports advisor for ${LOCATIONS[currentLoc].name}, Devon. Write a short plain-English conditions summary for ${dayLabel.replace("'s conditions",'')} for water sports enthusiasts.
+
+Conditions:
+- Wind: ${windKn} knots from ${compass}
+- Waves: ${waveH.toFixed(1)}m${wavePeriod ? ', '+wavePeriod+'s period' : ''}
+- Rain: ${rain}% chance, Temp: ${temp}°C
+- Offshore wind hazard: ${offshore ? 'YES' : 'No'}
+- ${tideContext}
+- Sport ratings: ${ratings}
+
+${isExmouth ? `Exmouth context: Two very different environments — the sheltered Exe Estuary is much calmer than open water past the shore development toward Orcombe Point, where tidal currents can be strong. Offshore (NE/E/SE) wind pushes paddlers away from shore.` : `Budleigh context: Open pebble beach. Wave rebound off pebbles makes kayak/SUP launches hazardous above 0.3m swell. No sheltered water option.`}
+
+Write 2-3 sentences only. Be direct and practical. Weave in any safety warnings naturally. No bullet points. No greeting. No location name at the start.`;
+
+  try {
+    const response = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        messages: [{ role: 'user', content: prompt }]
+      })
+    });
+    const data = await response.json();
+    const text = data.content && data.content[0] && data.content[0].text;
+    if (!text) throw new Error('No content');
+
+    // Compute flags to cache alongside summary
+    const flags = getFlags(windKph, windDir, waveH, currentLoc);
+
+    // Save to daily cache
+    try { localStorage.setItem(cacheKey, JSON.stringify({ text, flags, ts: Date.now() })); } catch(e) {}
+
+    summaryEl.className = 'summary-text';
+    summaryEl.textContent = text;
+    renderFlags(flags);
+
+  } catch(e) {
+    // Rule-based fallback
+    summaryEl.className = 'summary-text';
+    let summary = `${compass} wind at ${windKn} knots`;
+    if (waveH > 0.1) summary += ` with ${waveH.toFixed(1)}m waves`;
+    summary += '. ';
+    if (windKn < 8 && waveH < 0.3) summary += 'Very calm — excellent for all sports.';
+    else if (windKn > 25 || waveH > 1.5) summary += 'Challenging — experienced water users only.';
+    else if (windKn >= 12 && windKn <= 25) summary += 'Good wind for kite surfing and sailing. Kayakers and SUP take care.';
+    else summary += 'Moderate — manageable for most sports with appropriate experience.';
+    if (offshore) summary += ' Offshore wind is a significant hazard.';
+    if (rain > 60) summary += ' Rain likely — waterproofs recommended.';
+    summaryEl.textContent = summary;
+    renderFlags(getFlags(windKph, windDir, waveH, currentLoc));
+    console.error('AI summary failed:', e);
+  }
+}
+
+function renderFlags(flags) {
+  const container = document.getElementById('flags-container');
+  if (!container) return;
+  container.innerHTML = flags.map(f =>
+    `<div class="flag flag-${f.type}"><span class="flag-icon">${f.icon}</span>${f.text}</div>`
+  ).join('');
+}
+
+function setDay(d) {
+  currentDay = d;
+  for (let i = 0; i < 4; i++) {
+    const t = document.getElementById('tab-'+i);
+    if (t) t.classList.toggle('active', i === d);
+  }
+  renderDay(d);
+  renderForecast();
+  if (tideData) {
+    const now = new Date();
+    const dayDate = new Date(now); dayDate.setDate(now.getDate()+d);
+    const label = d === 0 ? 'Today' : d === 1 ? 'Tomorrow' : SHORT_DAYS[dayDate.getDay()];
+    const hdr = document.getElementById('tide-section-header');
+    if (hdr) hdr.textContent = 'Tide times — ' + label;
+    renderTideTable(tideData, d);
+  }
+}
+
+function renderForecast() {
+  if (!weatherData || !marineData) return;
+  const now = new Date();
+  const container = document.getElementById('forecast-days');
+  container.innerHTML = '';
+  for (let d = 0; d < 4; d++) {
+    const offset = d * 24 + 9;
+    const windKn = Math.round(weatherData.hourly.wind_speed_10m[offset] * 0.539957);
+    const waveH = (marineData.hourly.wave_height[offset] || 0).toFixed(1);
+    const dayDate = new Date(now); dayDate.setDate(now.getDate() + d);
+    const name = d === 0 ? 'Today' : d === 1 ? 'Tmrw' : SHORT_DAYS[dayDate.getDay()];
+    const div = document.createElement('div');
+    div.className = 'forecast-day' + (d === currentDay ? ' active-day' : '');
+    div.onclick = () => setDay(d);
+    div.innerHTML = `<div class="fc-name">${name}</div><div class="fc-wind">${windKn}kn</div><div class="fc-wave">${waveH}m wave</div>`;
+    container.appendChild(div);
+  }
+}
+
+function renderTideHero(extremes) {
+  const now = Math.floor(Date.now()/1000);
+  const upcoming = extremes.filter(t => t.dt >= now).slice(0, 2);
+  function fill(id, tide) {
+    if (!tide) return;
+    const el = document.getElementById(id);
+    const t = new Date(tide.dt * 1000);
+    el.querySelector('.tide-next-label').textContent = 'Next ' + (tide.type === 'High' ? 'high' : 'low') + ' tide';
+    el.querySelector('.tide-next-time').textContent = t.toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    el.querySelector('.tide-next-height').textContent = tide.height ? tide.height.toFixed(1)+'m' : '—';
+    el.querySelector('.tide-next-in').textContent = timeUntil(tide.dt) || '';
+  }
+  fill('next-tide-1', upcoming[0]);
+  fill('next-tide-2', upcoming[1]);
+}
+
+function renderTideTable(extremes, dayOffset) {
+  const base = new Date(); base.setHours(0,0,0,0);
+  base.setDate(base.getDate() + dayOffset);
+  const next = new Date(base); next.setDate(base.getDate()+1);
+  const start = base.getTime()/1000, end = next.getTime()/1000;
+  const dayTides = extremes.filter(t => t.dt >= start && t.dt < end);
+  const rows = document.getElementById('tide-rows');
+  if (dayTides.length === 0) {
+    rows.innerHTML = '<div class="tide-row"><span style="color:#888;font-size:13px;">No tide data for this day</span></div>';
+    return;
+  }
+  rows.innerHTML = dayTides.map(t => {
+    const time = new Date(t.dt*1000).toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    const isHigh = t.type === 'High';
+    const height = t.height ? t.height.toFixed(1)+'m' : '—';
+    return `<div class="tide-row">
+      <div class="tide-type-wrap">
+        <span class="tide-dot ${isHigh ? 'tide-dot-high' : 'tide-dot-low'}"></span>
+        <span class="tide-type">${isHigh ? 'High tide' : 'Low tide'}</span>
+      </div>
+      <span class="tide-time">${time}</span>
+      <span class="tide-height">${height}</span>
+    </div>`;
+  }).join('');
+}
+
+
+
+function cacheSet(key, data, ttlMins) {
+  try { localStorage.setItem(key, JSON.stringify({ data, expiry: Date.now() + ttlMins*60000 })); } catch(e) {}
+}
+function cacheGet(key) {
+  try {
+    const item = JSON.parse(localStorage.getItem(key));
+    if (item && Date.now() < item.expiry) return item.data;
+  } catch(e) {}
+  return null;
+}
+
+async function loadWeather(lat, lon, locKey) {
+  const cached = cacheGet('weather_'+locKey);
+  if (cached) { weatherData = cached.w; marineData = cached.m; return; }
+  const wUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&hourly=temperature_2m,precipitation_probability,wind_speed_10m,wind_direction_10m&wind_speed_unit=kmh&forecast_days=5&timezone=Europe%2FLondon`;
+  const mUrl = `https://marine-api.open-meteo.com/v1/marine?latitude=${lat}&longitude=${lon}&hourly=wave_height,wave_period&forecast_days=5&timezone=Europe%2FLondon`;
+  console.log('Fetching weather:', wUrl);
+  const [wRes, mRes] = await Promise.all([fetch(wUrl), fetch(mUrl)]);
+  console.log('Weather status:', wRes.status, 'Marine status:', mRes.status);
+  if (!wRes.ok) throw new Error('Weather API returned ' + wRes.status);
+  if (!mRes.ok) throw new Error('Marine API returned ' + mRes.status);
+  weatherData = await wRes.json();
+  marineData = await mRes.json();
+  console.log('Weather data loaded, hours:', weatherData?.hourly?.wind_speed_10m?.length);
+  cacheSet('weather_'+locKey, { w: weatherData, m: marineData }, 30);
+}
+
+async function loadTides(lat, lon, locKey) {
+  const cached = cacheGet('tides_'+locKey);
+  if (cached) { tideData = cached; return; }
+  const now = new Date(); now.setHours(0,0,0,0);
+  const start = Math.floor(now.getTime()/1000);
+  const res = await fetch(`https://www.worldtides.info/api/v3?extremes&lat=${lat}&lon=${lon}&start=${start}&end=${start+345600}&key=${WORLDTIDES_KEY}`);
+  const data = await res.json();
+  if (data.extremes) { tideData = data.extremes; cacheSet('tides_'+locKey, tideData, 720); }
+}
+
+async function init(locKey) {
+  const loc = LOCATIONS[locKey];
+  document.getElementById('header-loc-name').textContent = loc.name;
+  document.getElementById('last-updated').textContent = 'Fetching live data...';
+  currentDay = 0;
+
+  // Clear any stale cache from previous versions
+  try {
+    ['weather_exmouth','weather_budleigh','tides_exmouth','tides_budleigh'].forEach(k => localStorage.removeItem(k));
+  } catch(e) {}
+
+  const now = new Date();
+  for (let i = 0; i < 4; i++) {
+    const d = new Date(now); d.setDate(now.getDate()+i);
+    const tab = document.getElementById('tab-'+i);
+    if (!tab) continue;
+    tab.textContent = i===0?'Today':i===1?'Tomorrow':SHORT_DAYS[d.getDay()];
+    tab.classList.toggle('active', i===0);
+  }
+
+  const errorBox = document.getElementById('error-box');
+  errorBox.style.display = 'none';
+
+  try {
+    document.getElementById('last-updated').textContent = 'Loading weather...';
+    await loadWeather(loc.lat, loc.lon, locKey);
+    document.getElementById('last-updated').textContent = 'Loading tides...';
+    await loadTides(loc.lat, loc.lon, locKey);
+    document.getElementById('last-updated').textContent = 'Updated ' + new Date().toLocaleTimeString('en-GB',{hour:'2-digit',minute:'2-digit'});
+    if (tideData) { renderTideHero(tideData); renderTideTable(tideData, 0); }
+    renderForecast();
+    renderDay(0);
+  } catch(e) {
+    errorBox.style.display = 'block';
+    errorBox.textContent = 'Error loading data: ' + e.message + '. Check browser console for details.';
+    document.getElementById('summary-text').textContent = 'Could not load live data.';
+    console.error('Load error:', e);
+  }
+}
+
+function selectLocation(locKey) {
+  currentLoc = locKey;
+  document.getElementById('location-screen').style.display = 'none';
+  document.getElementById('app-screen').style.display = 'block';
+  init(locKey);
+}
+
+function changeLoc() {
+  weatherData = null; marineData = null; tideData = null; currentDay = 0;
+  document.getElementById('app-screen').style.display = 'none';
+  document.getElementById('location-screen').style.display = 'flex';
+}
+</script>
+</body>
+</html>
