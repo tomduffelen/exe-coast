@@ -833,8 +833,8 @@ async function loadTides(lat,lon,locKey) {
     console.log('Tides: using cache,',cached.length,'extremes');
     tideData=cached; return;
   }
-  const start=Math.floor(new Date().setHours(0,0,0,0)/1000);
-  const res=await fetch(`https://www.worldtides.info/api/v3?extremes&lat=50.6167&lon=-3.4167&start=${start}&end=${start+432000}&datum=LAT&key=${WORLDTIDES_KEY}`);
+  const today=new Date().toISOString().slice(0,10);
+  const res=await fetch(`https://www.worldtides.info/api/v3?extremes&lat=50.6167&lon=-3.4167&date=${today}&days=4&datum=LAT&key=${WORLDTIDES_KEY}`);
   const data=await res.json();
   if(data.extremes){
     const last=data.extremes[data.extremes.length-1];
