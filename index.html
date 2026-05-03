@@ -344,7 +344,7 @@ footer { text-align: center; padding: 1.5rem 1rem; font-size: 11px; color: var(-
 const WORKER_URL = 'https://exe-coast-api.tomduffelen.workers.dev';
 const WORLDTIDES_KEY = '4a299365-ad1c-4f3f-b519-000c72f1b648';
 const LOCS = {
-  exmouth: { name: 'Exmouth', lat: 50.6147, lon: -3.4130, estuary: true },
+  exmouth: { name: 'Exmouth', lat: 50.6167, lon: -3.4167, estuary: true },
   budleigh: { name: 'Budleigh Salterton', lat: 50.6290, lon: -3.3215, estuary: false }
 };
 const SHORT = ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'];
@@ -828,11 +828,22 @@ async function loadWeather(lat,lon,locKey) {
 }
 
 async function loadTides(lat,lon,locKey) {
-  const cached=cacheGet('t_'+locKey); if(cached){tideData=cached;return;}
+  const cached=cacheGet('t_'+locKey);
+  if(cached){
+    console.log('Tides: using cache,',cached.length,'extremes');
+    tideData=cached; return;
+  }
   const start=Math.floor(new Date().setHours(0,0,0,0)/1000);
-  const res=await fetch(`https://www.worldtides.info/api/v3?extremes&lat=${lat}&lon=${lon}&start=${start}&end=${start+432000}&key=${WORLDTIDES_KEY}`);
+  const res=await fetch(`https://www.worldtides.info/api/v3?extremes&lat=50.6167&lon=-3.4167&start=${start}&end=${start+432000}&datum=LAT&key=${WORLDTIDES_KEY}`);
   const data=await res.json();
-  if(data.extremes){tideData=data.extremes;cacheSet('t_'+locKey,tideData,720);}
+  if(data.extremes){
+    const last=data.extremes[data.extremes.length-1];
+    console.log('Tides: API returned',data.extremes.length,'extremes, last:',last?new Date(last.dt*1000).toLocaleDateString():'none','status:',data.status);
+    tideData=data.extremes;
+    cacheSet('t_'+locKey,tideData,720);
+  } else {
+    console.warn('Tides: no extremes in response',data);
+  }
 }
 
 // ── INIT ──
@@ -841,9 +852,6 @@ async function init(locKey) {
   document.getElementById('header-loc').textContent=loc.name;
   document.getElementById('last-updated').textContent='Loading...';
   currentDay=0; safetyOpen=false; openSport=null;
-
-  // Clear stale caches
-  ['w_exmouth','w_budleigh','t_exmouth','t_budleigh'].forEach(k=>{try{localStorage.removeItem(k);}catch(e){}});
 
   const now=new Date();
   for(let i=0;i<4;i++){

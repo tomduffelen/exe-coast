@@ -4,7 +4,16 @@
       "Bash(Get-ChildItem -Path \"C:\\\\Users\\\\tomdu\\\\OneDrive\\\\Documents\\\\exe_coast\" -Force)",
       "Bash(Select-Object Name, PSIsContainer)",
       "Bash(git add *)",
-      "Bash(git commit *)"
+      "Bash(git commit *)",
+      "WebSearch",
+      "WebFetch(domain:www.worldtides.info)",
+      "WebFetch(domain:www.worldtides.com)",
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:www.home-assistant.io)",
+      "WebFetch(domain:ntslf.org)",
+      "WebFetch(domain:psmsl.org)",
+      "WebFetch(domain:easytide.admiralty.co.uk)",
+      "WebFetch(domain:www.sonel.org)"
     ]
   }
 }
