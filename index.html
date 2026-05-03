@@ -508,7 +508,9 @@ const SPORTS = [
       if (offshore && kn > 12) t += 'Offshore wind is the enemy of SUP — a flat board acts like a sail and getting back to shore can become exhausting very quickly. ';
       if (loc === 'exmouth') t += 'The Exe Estuary is ideal for SUP — flat, sheltered and forgiving even on windier days. ';
       if (spread > 5) t += 'Gusty conditions make SUP unpredictable, especially offshore. ';
-      if (kn < 5 && waveM < 0.2) t += 'Flat calm — perfect SUP conditions.';
+      if (loc === 'budleigh' && waveM > 0.5) t += 'Wave rebound off the steep pebble beach makes conditions hazardous — launching and landing a SUP is dangerous in this swell.';
+      else if (loc === 'budleigh' && waveM > 0.3) t += 'Wave rebound off the steep pebble beach makes launching a SUP hazardous in these conditions.';
+      else if (kn < 5 && waveM < 0.2) t += 'Flat calm — perfect SUP conditions.';
       else if (kn > 10) t += 'Wind is on the limit for comfortable SUP — the estuary will be much more manageable than open water.';
       else t += 'Light conditions — enjoy it, these are the days SUP is at its best.';
       return t;
@@ -881,6 +883,7 @@ async function init(locKey) {
 
 function selectLocation(locKey) {
   currentLoc=locKey;
+  localStorage.setItem('exe-coast-loc', locKey);
   document.getElementById('location-screen').style.display='none';
   document.getElementById('app-screen').style.display='block';
   init(locKey);
@@ -890,6 +893,9 @@ function changeLoc() {
   document.getElementById('app-screen').style.display='none';
   document.getElementById('location-screen').style.display='flex';
 }
+
+const savedLoc = localStorage.getItem('exe-coast-loc');
+if (savedLoc && LOCS[savedLoc]) selectLocation(savedLoc);
 </script>
 <script>
 if ('serviceWorker' in navigator) {
