@@ -1,14 +1,14 @@
-const CACHE = 'exe-coast-v1';
+const CACHE = 'exe-coast-v2';
 const APP_SHELL = [
-  '/',
-  '/index.html',
-  '/manifest.json',
-  '/favicon.ico',
-  '/favicon-16x16.png',
-  '/favicon-32x32.png',
-  '/apple-touch-icon.png',
-  '/icon-192x192.png',
-  '/icon-512x512.png',
+  '/exe-coast/',
+  '/exe-coast/index.html',
+  '/exe-coast/manifest.json',
+  '/exe-coast/favicon.ico',
+  '/exe-coast/favicon-16x16.png',
+  '/exe-coast/favicon-32x32.png',
+  '/exe-coast/apple-touch-icon.png',
+  '/exe-coast/icon-192x192.png',
+  '/exe-coast/icon-512x512.png',
   'https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;600;700&family=DM+Mono:wght@400;500&display=swap',
 ];
 
