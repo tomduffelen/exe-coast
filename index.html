@@ -760,8 +760,11 @@ async function fetchAISummary(windKph, gustKph, windDir, waveH, wavePer, rain, d
   try {
     const cached = JSON.parse(localStorage.getItem(cacheKey));
     const midnight = new Date(dayDate); midnight.setHours(23,59,59,999);
-    if (cached?.text && Date.now()<midnight.getTime()) {
-      textEl.className='ai-text'; textEl.textContent=cached.text; return;
+    if (cached?.text) {
+      const valid = cached.fallback
+        ? Date.now() < (cached.ts || 0) + 5 * 60 * 1000
+        : Date.now() < midnight.getTime();
+      if (valid) { textEl.className='ai-text'; textEl.textContent=cached.text; return; }
     }
   } catch(e){}
 
@@ -797,13 +800,18 @@ Write 2-3 sentences maximum. Sound like a knowledgeable local friend, not a weat
       method:'POST', headers:{'Content-Type':'application/json'},
       body: JSON.stringify({ messages:[{role:'user',content:prompt}] })
     });
+    if (!res.ok) throw new Error(`Worker ${res.status}`);
     const data = await res.json();
     const text = data?.content?.[0]?.text;
-    if (!text) throw new Error('No content');
+    if (!text) {
+      console.error('AI: unexpected Worker response shape:', JSON.stringify(data).slice(0, 300));
+      throw new Error('No content');
+    }
     try { localStorage.setItem(cacheKey,JSON.stringify({text,ts:Date.now()})); } catch(e){}
     textEl.className='ai-text'; textEl.textContent=text;
   } catch(e) {
     const fallback = `${compass} wind at ${windKn} knots${gustKn>windKn+5?`, gusting ${gustKn}`:''} with ${waveH.toFixed(1)}m waves. ${windKn<8&&waveH<0.3?'Very calm — excellent for all sports.':windKn>22||waveH>1.5?'Challenging conditions — experienced water users only.':'Moderate conditions — suitable for most sports with appropriate experience.'}${offshore?' Watch the offshore wind.':''}`;
+    try { localStorage.setItem(cacheKey,JSON.stringify({text:fallback,ts:Date.now(),fallback:true})); } catch(ce){}
     textEl.className='ai-text'; textEl.textContent=fallback;
     console.error('AI failed:',e);
   }

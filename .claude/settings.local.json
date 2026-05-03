@@ -13,7 +13,8 @@
       "WebFetch(domain:ntslf.org)",
       "WebFetch(domain:psmsl.org)",
       "WebFetch(domain:easytide.admiralty.co.uk)",
-      "WebFetch(domain:www.sonel.org)"
+      "WebFetch(domain:www.sonel.org)",
+      "Bash(git push *)"
     ]
   }
 }
