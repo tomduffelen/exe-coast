@@ -907,7 +907,7 @@ if (savedLoc && LOCS[savedLoc]) selectLocation(savedLoc);
 </script>
 <script>
 if ('serviceWorker' in navigator) {
-  navigator.serviceWorker.register('/sw.js');
+  navigator.serviceWorker.register('/exe-coast/sw.js', { scope: '/exe-coast/' });
 }
 </script>
 </body>
