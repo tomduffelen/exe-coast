@@ -415,7 +415,7 @@ function getRating(windKph, gustKph, waveM, wavePeriod, sport, loc, tides, dayIn
   const gustKn = (gustKph || windKph) * 0.539957;
   const spread = gustSpread(windKph, gustKph);
   const chop = choppiness(waveM, wavePeriod);
-  const ideal = (rainPct || 0) > 20 ? { label:'Good', cls:'rating-good' } : ideal;
+  const ideal = (rainPct || 0) > 20 ? { label:'Good', cls:'rating-good' } : { label:'Ideal', cls:'rating-ideal' };
   const isBudleigh = loc === 'budleigh';
   const veryLow = loc === 'exmouth' && isVeryLowTide(tides, dayIndex || 0);
   const highTide = isBudleigh && isHighTide(tides, dayIndex || 0);
